@@ -35,7 +35,7 @@ public class Pokemon extends javax.swing.JFrame {
         weightTextField = new javax.swing.JTextField();
         abilityTextField = new javax.swing.JTextField();
         addButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
         loadButton = new javax.swing.JButton();
         title = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -81,8 +81,8 @@ public class Pokemon extends javax.swing.JFrame {
             }
         });
 
-        deleteButton.setText("Delete");
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+        saveButton.setText("Save");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
             }
@@ -110,7 +110,7 @@ public class Pokemon extends javax.swing.JFrame {
                         .addGap(52, 52, 52)
                         .addComponent(addButton)
                         .addGap(28, 28, 28)
-                        .addComponent(deleteButton)
+                        .addComponent(saveButton)
                         .addGap(32, 32, 32)
                         .addComponent(loadButton))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -170,7 +170,7 @@ public class Pokemon extends javax.swing.JFrame {
                         .addComponent(abilityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(44, 44, 44)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(loadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(66, Short.MAX_VALUE))
@@ -261,69 +261,40 @@ public class Pokemon extends javax.swing.JFrame {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
        
-            String id = idTextField.getText().trim();
-            String name = nameTextField.getText().trim();
-            String type = typeTextField.getText().trim();
-            String level = levelTextField.getText().trim();
-            String weight = weightTextField.getText().trim();
-            String ability = abilityTextField.getText().trim();
-            
-            if(id.isEmpty() || name.isEmpty() || type.isEmpty() || level.isEmpty() || weight.isEmpty() || ability.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            // Validate numeric fields
-            try {
-            // Parse numeric fields
-                int Ids = Integer.parseInt(id);
-                int levels = Integer.parseInt(level);
-                double weights = Double.parseDouble(weight);
-
-            // Prepare the line to write to file
-            String pokemonData = id + "," + name + "," + type + "," + level + "," + weight + "," + ability;
-                
-            // Write to pokemon.txt using simple BufferedWriter
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter("pokemon.txt", true))) { // true = append
-                bw.write(pokemonData);
-                bw.newLine();
-            }
-
-            // Update the table from the file
-            loadPokemonFromFile();
-
-            // Clear input fields
+        String id = idTextField.getText().trim();
+        String name = nameTextField.getText().trim();
+        String type = typeTextField.getText().trim();
+        String level = levelTextField.getText().trim();
+        String weight = weightTextField.getText().trim();
+        String ability = abilityTextField.getText().trim();
+    
+        if (id.isEmpty() || name.isEmpty() || type.isEmpty() || level.isEmpty() ||
+            weight.isEmpty() || ability.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Input Error");
+            return;
+        }
+    
+        // Filter numeric fields
+        try {
+            int idNum = Integer.parseInt(id);       // ID must be integer
+            int levelNum = Integer.parseInt(level); // Level must be integer
+            int weightNum = Integer.parseDouble(weight); // Weight must be double
+    
+            // Add to table
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{idNum, name, type, levelNum, weightNum, ability});
+    
+            // Clear fields
             idTextField.setText("");
             nameTextField.setText("");
             typeTextField.setText("");
             levelTextField.setText("");
             weightTextField.setText("");
             abilityTextField.setText("");
-
+    
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID and Level must be integers.\nWeight must be a number (can include decimal).", 
-                                          "Input Error", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error writing to file: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "ID and Level must be integers.\nWeight must be a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    // Helper method to read pokemon.txt and load data into jTable1
-    private void loadPokemonFromFile() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); // Clear existing rows
-
-        try (BufferedReader br = new BufferedReader(new FileReader("PokemonInfo.txt"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(","); // Split line by comma
-                if(data.length == 6) { // Ensure all fields exist
-                    model.addRow(data);
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage());
-        }
-
         // TODO add your handling code here:
     }//GEN-LAST:event_addButtonActionPerformed
 
@@ -331,12 +302,91 @@ public class Pokemon extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_abilityTextFieldActionPerformed
 
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         
+       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No records to save.", "Save Error");
+            return;
+        }
+    
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("PokemonInfo.txt"))) {
+    
+            for (int i = 0; i < model.getRowCount(); i++) {
+    
+                // Read each column and trim spaces
+                String id = model.getValueAt(i, 0).toString().trim();
+                String name = model.getValueAt(i, 1).toString().trim();
+                String type = model.getValueAt(i, 2).toString().trim();
+                String level = model.getValueAt(i, 3).toString().trim();
+                String weight = model.getValueAt(i, 4).toString().trim();
+                String ability = model.getValueAt(i, 5).toString().trim();
+    
+                // Validate numeric fields
+                try {
+                    int idNum = Integer.parseInt(id);
+                    int levelNum = Integer.parseInt(level);
+                    double weightNum = Double.parseDouble(weight);
+                    
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid numeric value at row " + (i + 1) +
+                            ". ID and Level must be integers, Weight must be a number.",
+                            "Save Error");
+                    return; // stop saving if invalid
+                }
+    
+                // Write to file
+                bw.write(id + "," + name + "," + type + "," + level + "," + weight + "," + ability);
+                bw.newLine();
+            }
+    
+            JOptionPane.showMessageDialog(this, "All records saved successfully!");
+    
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error writing to file: " + e.getMessage(),
+                                          "Save Error", JOptionPane.ERROR_MESSAGE);
+        }
         // TODO add your handling code here:
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+    
+        File file = new File("PokemonInfo.txt");
+    
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(this, "File does not exist.", "Load Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 6) {
+                    try {
+                        // Validate numeric fields
+                        int idNum = Integer.parseInt(data[0]);
+                        int levelNum = Integer.parseInt(data[3]);
+                        int weightNum = Integer.parseDouble(data[4]);
+    
+                        model.addRow(new Object[]{idNum, data[1], data[2], 
+                                    levelNum, weightNum, data[5]});
+                        
+                    } catch (NumberFormatException ex) {
+                        // skip invalid rows
+                        System.out.println("Skipping invalid row: " + line);
+                    }
+                }
+            }
+            JOptionPane.showMessageDialog(this, "Records loaded successfully!");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage());
+        }
         // TODO add your handling code here:
     }//GEN-LAST:event_loadButtonActionPerformed
 
@@ -378,7 +428,7 @@ public class Pokemon extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField abilityTextField;
     private javax.swing.JButton addButton;
-    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton saveButton;
     private javax.swing.JTextField idTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
