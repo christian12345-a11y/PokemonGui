@@ -276,12 +276,12 @@ public class Pokemon extends javax.swing.JFrame {
             try {
             // Parse numeric fields
                 int Ids = Integer.parseInt(id);
-                int levels = Integer.parseInt(name);
+                int levels = Integer.parseInt(level);
                 double weights = Double.parseDouble(weight);
 
             // Prepare the line to write to file
             String pokemonData = id + "," + name + "," + type + "," + level + "," + weight + "," + ability;
-
+                
             // Write to pokemon.txt using simple BufferedWriter
             try (BufferedWriter bw = new BufferedWriter(new FileWriter("pokemon.txt", true))) { // true = append
                 bw.write(pokemonData);
@@ -312,7 +312,7 @@ public class Pokemon extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); // Clear existing rows
 
-        try (BufferedReader br = new BufferedReader(new FileReader("pokemon.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("PokemonInfo.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(","); // Split line by comma
@@ -332,6 +332,7 @@ public class Pokemon extends javax.swing.JFrame {
     }//GEN-LAST:event_abilityTextFieldActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        
         // TODO add your handling code here:
     }//GEN-LAST:event_deleteButtonActionPerformed
 
