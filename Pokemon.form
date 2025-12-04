@@ -133,7 +133,7 @@
                   </Group>
                   <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="deleteButton" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
+                      <Component id="saveButton" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="loadButton" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="addButton" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                   </Group>
@@ -204,9 +204,9 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="deleteButton">
+        <Component class="javax.swing.JButton" name="saveButton">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Delete"/>
+            <Property name="text" type="java.lang.String" value="Save"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteButtonActionPerformed"/>
